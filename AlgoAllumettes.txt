@@ -1,0 +1,276 @@
+fonction deroulementBotImp(nbAll : entier) retourne entier 
+Debut
+    """Fonction permettant a l'ordinateur en mode 'Impossible' de jouer
+    Entrée : Nombre d'allumettes 
+    Sortie : Nombre d'allumettes, soustraite par le nombre d'allumettes choisies
+    """
+
+    choixDuBot : entier
+
+    si (nbAll+2)%4 = 0 alors
+        choixDuBot <- 1
+    finSi
+    si (nbAll+1)%4 = 0 alors
+        choixDuBot <- 2
+    finSi
+    si nbAll%4 = 0 alors
+        choixDuBot <- 3
+    finSi
+
+    nbAll <- nbAll - choixDuBot 
+    
+    afficher "Choix de l'ordinateur :",choixDuBot
+
+    affAll(nbAll)
+    
+    retourne nbAll
+fin
+
+Fonction deroulementBotNorm(nbAll : entier) retourne entier :
+Debut
+    """Fonction permettant a l'ordinateur en mode 'Normal' de jouer
+    Entrée : Nombre d'allumettes 
+    Sortie : Nombre d'allumettes, soustraite par le nombre d'allumettes choisies
+    """
+    
+    choixDuBot : entier
+
+    choixDuBot <- randint(1,3)
+
+    tant que choixDuBot > nbAll faire
+        choixDuBot <- randint(1,3)
+    finFaire
+
+    nbAll <- nbAll - choixDuBot 
+    afficher "Choix de l'ordinateur :",choixDuBot
+    affAll(nbAll)
+    
+    retourne nbAll
+Fin
+
+fonction changeNbAll() retourne entier:
+Debut
+    """
+    Fonction permettant de demander au joueurs si ils veulent changer le nombre d'allumettes au départ
+    Entrée : None
+    Sortie : Nombre d'allumettes
+    """
+
+    choix : chaine
+
+    afficher "Voulez-vous changer le nombre d'allumettes ? o/N : "
+    Saisir choix
+
+    tant que choix != "non" et choix != "oui" faire
+        afficher "Rentrez une valeur valide.(oui ; non )"
+        afficher "Voulez-vous changer le nombre d'allumettes ? o/N : "
+        Saisir choix
+    finFaire
+
+    si choix = "oui" alors
+        nbAll <- choixNbAll()
+    finSi
+
+    si choix = "non" alors
+        nbAll <- 20
+    finSi
+    
+    retourne nbAll
+Fin
+
+fonction verdictJvJ(quelJoueur : entier, J1 : chaine, J2 : chaine)
+Debut
+    """Procédure permettant de rendre le verdict de la partie dans tous les modes 
+    de jeu a l'exception du mode Joueur VS Joueur
+    Entrée : l'id du joueur qui aurait joué après, le pseudo du joueur 1, le pseudo du joueur 2
+    Sortie : None"""
+
+    si quelJoueur = 2 alors
+        afficher J1,"a perdu."
+        retourne scoreJ1,scoreJ2+1
+    finSi
+
+    si quelJoueur = 1 alors
+        afficher J2,"a perdu."
+        retourne scoreJ1+1,scoreJ2
+    finSi
+Fin
+
+
+
+Procédure allumettes(J1 : joueur, J2 : joueur)
+Debut
+    """Procédure permettant de jouer au jeu des allumettes
+    Entrée : Joueur1, Joueur2
+    Sortie : score_allumette du joueur 1, score_allumette du joueur 2
+    """
+    pseudoJ1 : chaine
+    pseudoJ2 : chaine
+    scoreJ1 : entier     
+    scoreJ2 : entier     
+
+    pseudoJ1 <- J1.pseudo
+    pseudoJ2 <- J2.pseudo
+    scoreJ1 <- J1.score_allumette
+    scoreJ2 <- J2.score_allumette
+    nbAll : entier 
+    quelJoueurJoue : entier 
+    modeDeJeu : entier 
+    varTemp : chaine
+
+    afficher "Il y a 20 allumettes de base, vous en tirerez chacun 1, 2 ou 3 a chaque tours."
+    afficher "Le but est de faire prendre à l'adversaire la dernière allumette."
+
+    nbAll <- changeNbAll()
+    afficher "Nombre d'allumettes :",nbAll
+    modeDeJeu <- menuBots()
+
+    si modeDeJeu = 4 alors
+        afficher "Au revoir"
+    finSi
+
+    si modeDeJeu = 1 alors
+        quelJoueurJoue <- 0
+        affAll(nbAll)
+        tant que nbAll > 0 faire
+
+            si quelJoueurJoue = 0 alors
+                afficher pseudoJ1,"commence."
+                nbAll <- deroulement(nbAll)
+                quelJoueurJoue <- 2
+            finSi
+
+            si quelJoueurJoue = 1 alors
+                afficher pseudoJ1,"joue."
+                nbAll <- deroulement(nbAll)
+                quelJoueurJoue <- 2
+            finSi
+                
+            si quelJoueurJoue = 2 alors
+                afficher pseudoJ2,"joue."
+                nbAll <- deroulement(nbAll)
+                quelJoueurJoue <- 1
+            finSi
+
+        finFaire
+        scoreJ1,scoreJ2 <- verdictJvJ(quelJoueurJoue,pseudoJ1,pseudoJ2,scoreJ1,scoreJ2)
+        retourne scoreJ1,scoreJ2
+    finSi
+    si modeDeJeu = 2 alors
+        quelJoueurJoue <- 0
+
+        pseudoJ1 <- choixJoueur(pseudoJ1,pseudoJ2)
+        pseudoJ2 <- difficulteBot()
+        afficher pseudoJ2
+        
+        si (nbAll+3)%4 != 0 and pseudoJ2 = "BotImp" alors
+            varTemp <- pseudoJ1
+            pseudoJ1 <- pseudoJ2
+            pseudoJ2 <- varTemp
+        finSi
+        affAll(nbAll)
+
+        si pseudoJ2 = "BotImp" or pseudoJ1 = "BotImp" alors
+            si pseudoJ1 = "BotImp" alors
+                tant que nbAll > 0 faire
+
+                    si quelJoueurJoue = 0 alors
+                        afficher pseudoJ1,"commence."
+                        nbAll <- deroulementBotImp(nbAll)
+                        quelJoueurJoue <- 2
+                    finSi
+
+                    si quelJoueurJoue = 1 alors
+                        afficher pseudoJ1,"joue."
+                        nbAll <- deroulementBotImp(nbAll)
+                        quelJoueurJoue <- 2
+                    finSi
+                    si quelJoueurJoue = 2 alors
+                        afficher pseudoJ2,"joue."
+                        nbAll <- deroulement(nbAll)
+                        quelJoueurJoue <- 1
+                    finSi
+                finFaire
+            sinon
+                tant que nbAll > 0 faire
+
+                    si quelJoueurJoue = 0 alors
+                        afficher pseudoJ1,"commence."
+                        nbAll <- deroulement(nbAll)
+                        quelJoueurJoue <- 2
+                    finSi
+
+                    si quelJoueurJoue = 1 alors
+                        afficher pseudoJ1,"joue."
+                        nbAll <- deroulement(nbAll)
+                        quelJoueurJoue <- 2
+                    finSi
+                    si quelJoueurJoue = 2 alors
+                        afficher pseudoJ2,"joue."
+                        nbAll <- deroulementBotImp(nbAll)
+                        quelJoueurJoue <- 1
+                    finSi
+                finFaire
+            finSi
+        finSi
+
+        si pseudoJ2 = "BotNorm" alors
+            tant que nbAll > 0 faire
+
+                si quelJoueurJoue = 0 alors
+                    afficher pseudoJ1,"commence."
+                    nbAll <- deroulement(nbAll)
+                    quelJoueurJoue <- 2
+                finSi
+
+                si quelJoueurJoue = 1 alors
+                    afficher pseudoJ1,"joue."
+                    nbAll <- deroulement(nbAll)
+                    quelJoueurJoue <- 2
+                finSi
+                    
+                si quelJoueurJoue = 2 alors
+                    afficher pseudoJ2,"joue."
+                    nbAll <- deroulementBotNorm(nbAll)
+                    quelJoueurJoue <- 1
+                finSi
+
+            finFaire
+        finSi
+        verdict(quelJoueurJoue,pseudoJ1,pseudoJ2)
+
+    finSi
+    si modeDeJeu = 3 alors
+
+        pseudoJ1 <- "BotNorm1"
+        pseudoJ2 <- "BotNorm2"
+
+        quelJoueurJoue <- 0
+        afficher "Les ordinateurs jouant seront en difficulté normale par choix du créateur."
+
+        affAll(nbAll)
+        tant que nbAll > 0 alors
+            
+            si quelJoueurJoue = 0 alors
+                afficher pseudoJ1,"commence."
+                nbAll <- deroulementBotNorm(nbAll)
+                quelJoueurJoue <- 2
+            finSi
+
+            si quelJoueurJoue = 1 alors
+                afficher pseudoJ1,"joue."
+                nbAll <- deroulementBotNorm(nbAll)
+                quelJoueurJoue <- 2
+            finSi
+                
+            si quelJoueurJoue = 2 alors
+                afficher pseudoJ2,"joue."
+                nbAll <- deroulementBotNorm(nbAll)
+                quelJoueurJoue <- 1
+            finSi
+        finFaire
+        verdict(quelJoueurJoue,pseudoJ1,pseudoJ2)
+    finSi
+    
+    retourne scoreJ1,scoreJ2
+Fin

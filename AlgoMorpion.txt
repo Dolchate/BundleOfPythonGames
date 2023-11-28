@@ -1,0 +1,507 @@
+fonction saisieMorpion(table[3][3] : chaine, signe : chaine)-> table[3][3]
+Debut
+    """
+    Fonction permettant la saisie d'un signe dans une grille de Morpion
+    Entrée : Matrice, signe
+    Sortie : Matrice
+    """
+    ligne : entier
+    colonne : entier
+    ligne <- saisieEntier("Choix de la ligne : ")-1
+    colonne <- saisieEntier("Choix de la colonne : ")-1
+    caseVide : booléen
+    caseVide <- Faux
+    tant que caseVide != Vrai faire
+
+        si ligne >= 0 et ligne <= 2 et colonne >= 0 et colonne <= 2 et table[ligne][colonne] = ' ' :
+            table[ligne][colonne] <- signe
+            caseVide = Vrai
+        finSi
+        si
+            afficher "Cette case est invalide.\nVeuillez en choisir une autre."                   
+            ligne <- saisieEntier("Choix de la ligne : ")-1
+            colonne <- saisieEntier("Choix de la colonne : ")-1
+        finSi
+    finFaire
+    return table
+fin
+
+fonction verif(table[3][3] : chaine) -> entier
+Debut
+    """Fonction permettant de vérifier que la grille du morpion n'a pas de vainqueur.
+    Elle vérifie aussi que la grill n'est pas pleine. Renvoie un id en fonction du résultat de ses tests.
+    Entrée : Grille du morpion
+    Sortie : id en fonction du resultat des tests
+    """
+    i : entier
+    j : entier
+
+    pour i de 0 à 3 faire
+        si ( table[i][0] = table[i][1] = table[i][2] != " " ) alors
+            retourne 0
+        finSi
+    finFaire
+
+    pour i de 0 à 3 faire
+        si ( table[0][i] == table[1][i] == table[2][i] != " " ) alors
+            retourne 0
+        finSi
+    finFaire
+
+    si ( table[0][0] == table[1][1] == table[2][2] != " " ) alors
+        retourne 0
+    finSi
+
+    si ( table[0][2] == table[1][1] == table[2][0] != " " ) alors
+        retourne 0
+
+    pour i de 0 à 3 faire
+        pour j de 0 à 3 faire
+            si ( table[i][j] == " " ) alors
+                retourne 1
+            finSi
+        finFaire
+    finFaire
+    retourne 2
+fin
+
+fonction botNorm(table[3][3] : chaine, signe : chaine) retourne table[3][3]
+Debut
+    """Fonction permettant a l'ordinateur en mode 'Normal' de jouer
+    Entrée : Grille du morpion, signe à utiliser
+    Sortie : Grille du morpion modifiée par le choix de l'ordinateur
+    """
+    caseVide : booléen
+    ligne <- randint(0,2)
+    colonne <- randint(0,2)
+    caseVide <- Faux
+    tant que caseVide != Vrai faire
+
+        si ligne >= 0 and ligne <= 2 and colonne >= 0 and colonne <= 2 and table[ligne][colonne] = ' ' alors
+            table[ligne][colonne] <- signe
+            caseVide <- True
+        sinon                 
+            ligne <- randint(0,2)
+            colonne <- randint(0,2)  
+    retourne table
+fin
+
+fonction botDif(table[3][3] : chaine, signe : chaine) -> table[3][3]
+Debut
+    """Fonction permettant a l'ordinateur en mode 'Difficile' de jouer
+    Entrée : Grille du morpion, signe à utiliser
+    Sortie : Grille du morpion modifiée par le choix de l'ordinateur
+    """
+    i : entier
+    j : entier
+    compte <- entier
+    a_joue : booléen
+    a_joue <- Faux
+    compte <- 0
+
+    pour i de 0 à 3 faire
+        pour j de 0 à 3 faire
+            Si ( table[i][j] != ' ' ) alors
+                compte <- compte + 1
+            finSi
+        finFaire
+    finFaire
+    Si compte = 0 alors
+        table[0][0] <- signe
+    finSi
+    Si compte = 1 alors 
+        Si table[0][0] = ' ' alors
+            table[0][0] <- signe
+        Sinon
+            table[1][1] <- signe
+        finSi
+    Sinon
+
+        pour i de 0 à 3 faire
+            Si (table[0][i] = table[1][i] = signe et table[2][i] = ' ') alors
+                table[2][i] <- signe
+                a_joue <- True
+                retourne table
+            finSi
+            Si (table[0][i] = ' ' et table[1][i] = table[2][i] = signe) alors
+                table[0][i] <- signe
+                a_joue <- True
+                retourne table
+            finSi
+            Si (table[0][i] = table[2][i] = signe et table[1][i] = ' ') alors
+                table[1][i] <- signe
+                a_joue <- True
+                retourne table
+            finSi
+        finFaire
+        pour i de 0 à 3 faire
+            Si (table[i][0] = table[i][1] = signe et  table[i][2] = ' ') alors
+                table[i][2] <- signe
+                a_joue <- True
+                retourne table
+            finSi
+            Si (table[i][0] = ' ' et table[i][1] = table[i][2] = signe) alors
+                table[i][0] <- signe
+                a_joue <- True
+                retourne table
+            finSi
+            Si (table[i][0] =  table[i][2] = signe et table[i][1]== ' ') alors
+                table[i][1] <- signe
+                a_joue <- True
+                retourne table
+            finSi
+        finFaire
+        Si (table[0][0] = table[1][1] = signe et  table[2][2] = ' ') alors
+            table[2][2] <- signe
+            a_joue <- True
+            retourne table
+        finSi
+        Si (table[0][0] = table[2][2] = signe et  table[1][1] = ' ') alors
+            table[1][1] <- signe
+            a_joue <- True
+            retourne table
+        finSi
+        Si (table[0][0] = ' ' et table[1][1] = table[2][2] = signe) alors
+            table[0][0] <- signe
+            a_joue <- True
+            retourne table
+        finSi
+        Si (table[0][2] = table[1][1] = signe et  table[2][0] = ' ') alors
+            table[2][0] <- signe
+            a_joue <- True
+            retourne table
+        finSi
+        Si (table[2][0] = table[1][1] = signe et  table[0][2] = ' ') alors
+            table[0][2] <- signe
+            a_joue <- True
+            retourne table
+        finSi
+        Si (table[0][2] = table[2][0] = signe et  table[1][1] = ' ') alors
+            table[1][1] <- signe
+            a_joue <- True
+            retourne table
+        finSi
+        tant que a_joue = False faire
+            pour i de 0 à 3 faire
+                Si (table[0][i] = table[1][i] != ' ' et  table[2][i] = ' ') alors
+                    table[2][i] <- signe
+                    a_joue <- True
+                    retourne table
+                finSi
+                Si (table[0][i] = ' ' et table[1][i] = table[2][i] != ' ') alors
+                    table[0][i] <- signe
+                    a_joue <- True
+                    retourne table
+                finSi
+                Si (table[0][i] = table[2][i] != ' ' et table[1][i] = ' ') alors
+                    table[1][i] <- signe
+                    a_joue <- True
+                    retourne table
+                finSi
+            finFaire
+            pour i de 0 à 3 faire
+                Si (table[i][0] = table[i][1] != ' ' et  table[i][2] = ' ') alors
+                    table[i][2] <- signe
+                    a_joue <- True
+                    retourne table
+                finSi
+                Si (table[i][0] = ' ' et table[i][1] = table[i][2] != ' ') alors
+                    table[i][0] <- signe
+                    a_joue <- True
+                    retourne table
+                finSi
+                Si (table[i][0] =  table[i][2] != ' ' et table[i][1]== ' ') alors
+                    table[i][1] <- signe
+                    a_joue <- True
+                    retourne table
+                finSi
+            finFaire
+            Si (table[0][0] = table[1][1] != ' ' et  table[2][2] = ' ') alors
+                table[2][2] <- signe
+                a_joue <- True
+                retourne table
+            finSi
+            Si (table[0][0] = table[2][2] != ' ' et  table[1][1] = ' ') alors
+                table[1][1] <- signe
+                a_joue <- True
+                retourne table
+            finSi
+            Si (table[0][0] = ' ' et table[1][1] = table[2][2] != ' ') alors
+                table[0][0] <- signe
+                a_joue <- True
+                retourne table
+            finSi
+            Si (table[0][2] = table[1][1] != ' ' et  table[2][0] = ' ') alors
+                table[2][0] <- signe
+                a_joue <- True
+                retourne table
+            finSi
+            Si (table[2][0] = table[1][1] != ' ' et  table[0][2] = ' ') alors
+                table[0][2] <- signe
+                a_joue <- True
+                retourne table
+            finSi
+            Si (table[0][2] = table[2][0] != ' ' et  table[1][1] = ' ') alors
+                table[1][1] <- signe
+                a_joue <- True
+                retourne table
+            finSi
+            Sinon
+                pour i de 0 à 3 faire
+                    Si (table[0][i] = signe et table[1][i] = ' ' et  table[2][i] = ' ') alors
+                        Si table[2][i] = ' ' alors
+                            table[2][i] <- signe
+                            a_joue <- True
+                            retourne table
+                        Sinon
+                            table[1][i] <- signe
+                            a_joue <- True
+                            retourne table
+                        finSi
+                    finSi
+                    Si (table[0][i] = ' ' et table[2][i] = ' ' et table[1][i] = signe) alors
+                        Si table [0][i] = ' ' alors
+                            table[0][i] <- signe
+                            a_joue <- True
+                            retourne table
+                        Sinon
+                            table[2][i] <- signe
+                            a_joue <- True
+                            retourne table
+                        finSi
+                    finSi
+                    Si (table[2][i] = signe et table[0][i] = ' ' et table[1][i] = ' ') alors
+                        Si table[1][i] = ' ' alors
+                            table[1][i] <- signe
+                            a_joue <- True
+                            retourne table
+                        Sinon
+                            table[0][i] <- signe
+                            a_joue <- True
+                            retourne table
+                        finSi
+                    finSi
+                finFaire
+                Si table[0][2] = ' ' alors
+                    table[0][2] <- signe
+                    a_joue <- True
+                    retourne table
+                finSi
+                Si table[2][0] = ' ' alors
+                    table[2][0] <- signe
+                    a_joue <- True
+                    retourne table
+                finSi
+                Si table [2][2] = ' ' alors
+                    table[2][2] <- signe
+                    a_joue <- True
+                    retourne table
+                sinon
+                    pour i de 0 à 3 faire
+                        pour j de 0 à 3 faire
+                            Si ( table[i][j] = " " ) alors
+                                table[i][j] <- signe
+                                a_joue <- True
+                            finSi
+                        finFaire
+                    finFaire
+                finSi
+            finSi
+        finFaire
+    finSi                            
+    retourne table
+Fin
+
+Procédure morpion(joueur1 : joueur, joueur2 : joueur):
+Debut
+    """Procédure permettant de jouer au jeu du morpion
+    Entrée : Joueur1, Joueur2
+    Sortie : score_morpion du joueur 1, score_morpion du joueur 2
+    """
+    
+    choix : entier
+    quelJoueurJoue : entier
+    pseudoJ1 : chaine
+    pseudoJ1 <- joueur1.pseudo
+    pseudoJ2 : chaine
+    pseudoJ2 <- joueur2.pseudo
+    scoreJ1 : entier
+    scoreJ1 <- joueur1.score_morpion
+    scoreJ2 : entier
+    scoreJ2 <- joueur2.score_morpion
+    check : entier
+    check <- 1
+    afficher "Le jeux du morpion consiste à aligner 3 symboles \"O\" ou \"X\" sur une grille de 3 lignes et trois colonnes."
+    table[3][3] : chaine
+    table <- [[' ',' ',' '],[' ',' ',' '],[' ',' ',' ']]
+    choix <- choixMenu()
+    
+    Si choix = 1 alors
+        affMorpion(table)
+        quelJoueurJoue <- 1
+        tant que check = 1 faire
+            Si quelJoueurJoue = 1 alors
+                afficher pseudoJ1,"commence."
+                signe <- "\033[1;31mX\033[0m"
+                table <- saisieMorpion(table,signe)
+                affMorpion(table)
+                quelJoueurJoue <- 2
+                check <- verif(table)
+            finSi
+            Si quelJoueurJoue = 2 alors
+                signe <- "\033[1;34mO\033[0m"
+                afficher pseudoJ2,"joue."
+                table <- saisieMorpion(table,signe)
+                affMorpion(table)
+                quelJoueurJoue <- 3
+                check <- verif(table)
+            finSi
+            Si quelJoueurJoue = 3 alors
+                afficher pseudoJ1,"joue."
+                signe <- "\033[1;31mX\033[0m"
+                table <- saisieMorpion(table,signe)
+                affMorpion(table)
+                quelJoueurJoue <- 2
+                check <- verif(table)
+            finSi
+        finFaire
+        scoreJ1,scoreJ2 <- verdict(quelJoueurJoue,scoreJ1,scoreJ2,pseudoJ1,pseudoJ2,check)
+    finSi
+    Si choix = 2 alors
+        quelJoueurJoue <- 1
+        pseudoJ1 <- "Joueur"
+        pseudoJ2 <- difficulteBot()
+        affMorpion(table)
+        Si pseudoJ2 = "BotFac" alors
+            tant que check = 1 faire
+                Si quelJoueurJoue = 1 alors
+                    afficher pseudoJ1,"commence."
+                    signe <- "\033[1;31mX\033[0m"
+                    table <- saisieMorpion(table,signe)
+                    affMorpion(table)
+                    quelJoueurJoue <- 2
+                    check <- verif(table)
+                finSi
+                Si quelJoueurJoue = 2 alors
+                    signe <- "\033[1;34mO\033[0m"
+                    afficher pseudoJ2,"joue."
+                    sleep(1)
+                    table <- botNorm(table,signe)
+                    affMorpion(table)
+                    quelJoueurJoue <- 3
+                    check <- verif(table)
+                finSi
+                Si quelJoueurJoue = 3 alors
+                    afficher pseudoJ1,"joue."
+                    signe <- "\033[1;31mX\033[0m"
+                    table <- saisieMorpion(table,signe)
+                    affMorpion(table)
+                    quelJoueurJoue <- 2
+                    check <- verif(table)
+                finSi
+            finFaire
+        sinon
+            tant que check = 1 faire
+                Si quelJoueurJoue = 1 alors
+                    afficher pseudoJ1,"commence."
+                    signe <- "\033[1;31mX\033[0m"
+                    table <- saisieMorpion(table,signe)
+                    affMorpion(table)
+                    quelJoueurJoue <- 2
+                    check <- verif(table)
+                finSi
+                Si quelJoueurJoue = 2 alors
+                    signe <- "\033[1;34mO\033[0m"
+                    afficher pseudoJ2,"joue."
+                    sleep(1)
+                    table <- botDif(table,signe)
+                    affMorpion(table)
+                    quelJoueurJoue <- 3
+                    check <- verif(table)
+                finSi
+                Si quelJoueurJoue = 3 alors
+                    afficher pseudoJ1,"joue."
+                    signe <- "\033[1;31mX\033[0m"
+                    table <- saisieMorpion(table,signe)
+                    affMorpion(table)
+                    quelJoueurJoue <- 2
+                    check <- verif(table)
+                finSi
+            finFaire
+        finSi
+        verdictBot(quelJoueurJoue,pseudoJ1,pseudoJ2,check)
+    finSi
+    Si choix = 3  alors
+        quelJoueurJoue <- 1
+        pseudoJ1 <- difficulteBot()
+        pseudoJ2 <- pseudoJ1+"2"
+        pseudoJ1 <- pseudoJ1+"1"
+        affMorpion(table)
+        Si pseudoJ1 = "BotFac1" alors
+            tant que check = 1 faire
+                Si quelJoueurJoue = 1 alors
+                    signe <- "\033[1;31mX\033[0m"
+                    afficher pseudoJ1,"commence."
+                    sleep(1)
+                    table <- botNorm(table,signe)
+                    affMorpion(table)
+                    quelJoueurJoue <- 2
+                    check <- verif(table)
+                finSi
+                Si quelJoueurJoue = 2 alors
+                    signe <- "\033[1;34mO\033[0m"
+                    afficher pseudoJ2,"joue."
+                    sleep(1)
+                    table <- botNorm(table,signe)
+                    affMorpion(table)
+                    quelJoueurJoue <- 3
+                    check <- verif(table)
+                finSi
+                Si quelJoueurJoue = 3 alors
+                    afficher pseudoJ1,"joue."
+                    signe <- "\033[1;31mX\033[0m"
+                    sleep(1)
+                    table <- botNorm(table,signe)
+                    affMorpion(table)
+                    quelJoueurJoue <- 2
+                    check <- verif(table)
+                finSi
+            finFaire
+        sinon
+            tant que check = 1 faire
+                Si quelJoueurJoue = 1 alors
+                    signe <- "\033[1;31mX\033[0m"
+                    afficher pseudoJ1,"commence."
+                    sleep(1)
+                    table <- botDif(table,signe)
+                    affMorpion(table)
+                    quelJoueurJoue <- 2
+                    check <- verif(table)
+                finSi
+                Si quelJoueurJoue = 2 alors
+                    signe <- "\033[1;34mO\033[0m"
+                    afficher pseudoJ2,"joue."
+                    sleep(1)
+                    table <- botDif(table,signe)
+                    affMorpion(table)
+                    quelJoueurJoue <- 3
+                    check <- verif(table)
+                finSi
+                Si quelJoueurJoue = 3 alors
+                    afficher pseudoJ1,"joue."
+                    signe <- "\033[1;31mX\033[0m"
+                    sleep(1)
+                    table <- botDif(table,signe)
+                    affMorpion(table)
+                    quelJoueurJoue <- 2
+                    check <- verif(table)
+                finSi
+            finFaire
+        finSi
+        verdictBot(quelJoueurJoue,pseudoJ1,pseudoJ2,check)
+    finSi
+    Si choix = 4 alors
+        afficher "Au plaisir de vous revoir !"
+    finSi
+    return scoreJ1,scoreJ2
+fin
